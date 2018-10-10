@@ -49,5 +49,5 @@ model.generate(1000)
 model.save()
 
 # to load a model
-model = charRNN.CharRNN("test2", prevPath="checkpoints/test/rnn_train_test-102000")
+model2 = charRNN.CharRNN("test2", prevPath="checkpoints/test/rnn_train_test-102000")
 ```
