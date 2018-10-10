@@ -33,6 +33,7 @@ nLayers = 3 # how deep your rnn is
 model = charRNN.CharRNN(name, seqLen=50, internalSize=512, nLayers=3)
 
 # call loadData with a directory containing .txt files and the model will parse them into a dataset it can use for training
+# for large datasets (~500MB like the linux one this may take a minute or two, be patient)
 data = model.loadData("shakespeare/")
 
 # train the model
