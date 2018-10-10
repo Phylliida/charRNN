@@ -225,7 +225,9 @@ class CharRNN(object):
 				for k in range(len):
 					ryo, rh = sess.run([tfStuff.Yo, tfStuff.H], feed_dict={tfStuff.X: ry, tfStuff.pkeep: 1.0, tfStuff.Hin: rh, tfStuff.batchsize: 1})
 					rc = txt.sample_from_probabilities(ryo, topn=topn)
-					res.append(chr(txt.convert_to_alphabet(rc)))
+					cur = chr(txt.convert_to_alphabet(rc))
+					res.append(cur)
+					print(cur, end="")
 					ry = np.array([[rc]])
 				return "".join(res)
 	
