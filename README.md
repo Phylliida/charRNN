@@ -13,7 +13,7 @@ To use this, you do:
 ```python
 import charRNN
 model = charRNN.CharRNN("test")
-data = model.loadData("movies/")
+data = model.loadData("shakespeare/")
 model.fit(data) # press ctrl-c after 2-3 hours of training, this autosaves periodically
 model.generate(1000, seed="K") # generate a string of 1000 characters, starting with the letter "K"
 ```
@@ -33,7 +33,7 @@ nLayers = 3 # how deep your rnn is
 model = charRNN.CharRNN(name, seqLen=50, internalSize=512, nLayers=3)
 
 # call loadData with a directory containing .txt files and the model will parse them into a dataset it can use for training
-data = model.loadData("movies/")
+data = model.loadData("shakespeare/")
 
 # train the model
 # it will print every 50 batches, generate text every 150 batches, and save a checkpoint every 500 batches. You should expect to get fairly good results after 1-2 hours, but for very good results you should wait 4-5 hours (these times might be different depending on how good your computer is)
