@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function # if you are in python2, this lets us use print(..., end="") for printing the generated text
 import tensorflow as tf
 from tensorflow.contrib import layers
 from tensorflow.contrib import rnn  # rnn stuff temporarily in contrib, moving back to code in TF 1.1
