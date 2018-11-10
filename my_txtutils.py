@@ -16,6 +16,7 @@
 import numpy as np
 import glob
 import sys
+import codecs
 
 # size of the alphabet that we work with
 ALPHASIZE = 98
@@ -255,13 +256,25 @@ def read_data_files(directory, validation=True):
     bookranges = []
     shakelist = glob.glob(directory, recursive=True)
     for shakefile in shakelist:
-        shaketext = open(shakefile, "r")
-        print("Loading file " + shakefile)
-        start = len(codetext)
-        codetext.extend(encode_text(shaketext.read()))
-        end = len(codetext)
-        bookranges.append({"start": start, "end": end, "name": shakefile.rsplit("/", 1)[-1]})
-        shaketext.close()
+        try:
+            shaketext = open(shakefile, "r")
+            print("Loading file " + shakefile)
+            start = len(codetext)
+            codetext.extend(encode_text(shaketext.read()))
+            end = len(codetext)
+            bookranges.append({"start": start, "end": end, "name": shakefile.rsplit("/", 1)[-1]})
+            shaketext.close()
+        except UnicodeDecodeError:
+            shaketext = codecs.open(shakefile, "r", 'utf8')
+            print("Loading file " + shakefile)
+            start = len(codetext)
+            codetext.extend(encode_text(shaketext.read()))
+            end = len(codetext)
+            bookranges.append({"start": start, "end": end, "name": shakefile.rsplit("/", 1)[-1]})
+            shaketext.close()
+			
+			
+			
 
     if len(bookranges) == 0:
         raise Exception("No training data has been found, are you sure " + str(directory) + " exists?")

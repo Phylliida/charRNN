@@ -215,13 +215,32 @@ class CharRNN(object):
 					self.save(checkpointsPath=checkpointsPath, alreadyInGraph=True)
 
 	
-	def generate(self, len, seed="K", topn=2):
+	def feed(self, text, rh=None):
 		with self.tfStuff.graph.as_default():
 			with tf.variable_scope(self.fullName, reuse=tf.AUTO_REUSE):
 				tfStuff = self.tfStuff
 				sess = tfStuff.sess
-				ry = np.array([[txt.convert_from_alphabet(ord(seed[0]))]])
-				rh = np.zeros([1, self.internalSize * self.nLayers])
+				if rh is None:
+					rh = np.zeros([1, self.internalSize * self.nLayers])
+				for c in text:
+					ry = np.array([[txt.convert_from_alphabet(ord(c))]])
+					ryo, rh = sess.run([tfStuff.Yo, tfStuff.H], feed_dict={tfStuff.X: ry, tfStuff.pkeep: 1.0, tfStuff.Hin: rh, tfStuff.batchsize: 1})
+		return rh
+	
+	def generate(self, len, seed=None, topn=2, endAt=None, rh=None):
+		if seed is None:
+			seed = "H"
+		with self.tfStuff.graph.as_default():
+			with tf.variable_scope(self.fullName, reuse=tf.AUTO_REUSE):
+				tfStuff = self.tfStuff
+				sess = tfStuff.sess
+				if rh is None:
+					rh = np.zeros([1, self.internalSize * self.nLayers])
+				for c in seed[:-1]:
+					ry = np.array([[txt.convert_from_alphabet(ord(c))]])
+					ryo, rh = sess.run([tfStuff.Yo, tfStuff.H], feed_dict={tfStuff.X: ry, tfStuff.pkeep: 1.0, tfStuff.Hin: rh, tfStuff.batchsize: 1})
+				
+				ry = np.array([[txt.convert_from_alphabet(ord(seed[-1]))]])
 				res = []
 				for k in range(len):
 					ryo, rh = sess.run([tfStuff.Yo, tfStuff.H], feed_dict={tfStuff.X: ry, tfStuff.pkeep: 1.0, tfStuff.Hin: rh, tfStuff.batchsize: 1})
@@ -229,8 +248,10 @@ class CharRNN(object):
 					cur = chr(txt.convert_to_alphabet(rc))
 					res.append(cur)
 					print(cur, end="")
+					if cur == endAt:
+						break
 					ry = np.array([[rc]])
-				return "".join(res)
+				return seed + "".join(res), rh
 	
 	def fit(self, data, epochs=1000, displayFreq=50, genFreq=150, saveFreq=5000, verbosity=2):
 		progress = txt.Progress(displayFreq, size=111+2, msg="Training on next "+str(displayFreq)+" batches")
